@@ -9,38 +9,38 @@ function App() {
           <label htmlFor="cc_number">Card Number:</label>
           <input
             id="cc_number"
-            type="number"
+            type="text"
+            inputMode="tel"
             required
           />
         </div>
 
         <fieldset>
-          <legend>Expiry Date:</legend>
+          <legend>Expiry Date (MM / YY):</legend>
           <input
             id="cc_expiry_month"
-            type="number"
-            min="1"
-            max="12"
-            placeholder="MM"
+            type="text"
+            inputMode="tel"
+            maxLength={2}
             required
           />
           <span>/</span>
           <input
             id="cc_expiry_year"
-            type="number"
-            min="21"
-            max="99"
-            placeholder="YY"
+            type="text"
+            inputMode="tel"
+            maxLength={2}
             required
           />
         </fieldset>
 
         <div>
-          <label htmlFor="cc_code">CVC:</label>
+          <label htmlFor="cc_code">Security Code:</label>
           <input
             id="cc_code"
-            type="number"
-            placeholder="123"
+            type="text"
+            inputMode="tel"
+            maxLength={4}
             required
           />
         </div>
