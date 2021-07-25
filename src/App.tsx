@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="cc_number">Card Number:</label>
           <input
@@ -49,6 +49,28 @@ function App() {
       </form>
     </div>
   )
+}
+
+const currentMonth = new Date().getUTCMonth() + 1
+const currentYear  = new Date().getUTCFullYear() - 2000
+
+// Just outputs the values to console, unless the expiry date is invalid.
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  const form  = e.currentTarget
+  const month = parseInt(form.cc_expiry_month.value)
+  const year  = parseInt(form.cc_expiry_year.value)
+
+  if (year >= currentYear && month > currentMonth) {
+    console.log({
+      card_number:   parseInt(form.cc_number.value),
+      security_code: parseInt(form.cc_code.value),
+      expires:       `${month} / ${year}`
+    })
+  } else {
+    console.log("Expiry date is invalid! :(")
+  }
 }
 
 export default App
