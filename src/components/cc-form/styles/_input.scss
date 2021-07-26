@@ -1,0 +1,35 @@
+@mixin label-legend() {
+  label, legend {
+    display: inline-block;
+    padding: 0;
+    margin-bottom: 4px;
+
+    font-size: 1rem;
+  }
+}
+
+.input {
+  color: inherit;
+  line-height: inherit;
+  background: inherit;
+  transition: all 0.3s ease;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 2.8rem;
+  padding: 0;
+  padding-inline: 1rem;
+
+  background-color: hsl(215, 50%, 94%);
+  border: 1px solid rgb(175, 180, 200);
+  border-radius: 4px;
+
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 1.5rem;
+
+  &:focus {
+    outline: none;
+    border-color: rgb(0, 128, 255);
+    box-shadow: 0 0 0 4px dodgerblue;
+  }
+}

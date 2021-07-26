@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './styles.module.scss';
+import styles from './styles.module.scss'
+import Input from './components/input'
 
 export const Form = () => {
   return (
@@ -19,29 +19,12 @@ export const Form = () => {
         <Input id="cc_csc" maxLength={4} label="Security Code" />
       </div>
 
-      <button className={styles.submitButton} type="submit">Submit</button>
+      <button className={styles.submit} type="submit">Submit</button>
     </form>
-  );
+  )
 }
 
-const Input: React.FC<InputProps> = ({ id, label, ...props }) => (
-  <>
-    {label && (<label htmlFor={id}>{label}:</label>)}
-    <input
-      id={id}
-      type="text"
-      inputMode="tel"
-      autoComplete={id.replace(/_/g, "-")}
-      required
-      {...props}
-    />
-  </>
-)
-
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  id: string
-  label?: string
-}
+/* === form onSubmit === */
 
 const currentMonth = new Date().getUTCMonth() + 1
 const currentYear  = new Date().getUTCFullYear() - 2000
@@ -65,4 +48,4 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   }
 }
 
-export default Form;
+export default Form
