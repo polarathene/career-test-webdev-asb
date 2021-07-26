@@ -34,13 +34,13 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
 
   const form  = e.currentTarget
-  const month = parseInt(form.cc_expiry_month.value)
-  const year  = parseInt(form.cc_expiry_year.value)
+  const month = parseInt(form.cc_exp_month.value)
+  const year  = parseInt(form.cc_exp_year.value)
 
   if (year >= currentYear && month > currentMonth) {
     console.log({
       card_number:   parseInt(form.cc_number.value),
-      security_code: parseInt(form.cc_code.value),
+      security_code: parseInt(form.cc_csc.value),
       expires:       `${month} / ${year}`
     })
   } else {
