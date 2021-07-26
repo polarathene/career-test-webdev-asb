@@ -5,48 +5,42 @@ export const Form = () => {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.cc_number}>
-        <label htmlFor="cc_number">Card Number:</label>
-        <input
-          id="cc_number"
-          type="text"
-          inputMode="tel"
-          required
-        />
+        <Input id="cc_number" label="Card Number" />
       </div>
 
       <fieldset className={styles.cc_exp}>
         <legend>Expiry Date (MM / YY):</legend>
-        <input
-          id="cc_expiry_month"
-          type="text"
-          inputMode="tel"
-          maxLength={2}
-          required
-        />
+        <Input id="cc_exp_month" maxLength={2} />
         <span>/</span>
-        <input
-          id="cc_expiry_year"
-          type="text"
-          inputMode="tel"
-          maxLength={2}
-          required
-        />
+        <Input id="cc_exp_year" maxLength={2} />
       </fieldset>
 
       <div className={styles.cc_csc}>
-        <label htmlFor="cc_csc">Security Code:</label>
-        <input
-          id="cc_csc"
-          type="text"
-          inputMode="tel"
-          maxLength={4}
-          required
-        />
+        <Input id="cc_csc" maxLength={4} label="Security Code" />
       </div>
 
       <button className={styles.submitButton} type="submit">Submit</button>
     </form>
   );
+}
+
+const Input: React.FC<InputProps> = ({ id, label, ...props }) => (
+  <>
+    {label && (<label htmlFor={id}>{label}:</label>)}
+    <input
+      id={id}
+      type="text"
+      inputMode="tel"
+      autoComplete={id.replace(/_/g, "-")}
+      required
+      {...props}
+    />
+  </>
+)
+
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  id: string
+  label?: string
 }
 
 const currentMonth = new Date().getUTCMonth() + 1
