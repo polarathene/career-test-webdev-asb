@@ -1,11 +1,12 @@
-import React from 'react';
-import './App.scss';
-import Form from './components/cc-form'
+import './App.scss'
+import Page from './views/register-cc'
+import NavBar from './components/navbar'
 
 function App() {
   return (
     <div className="App">
-      <Form />
+      <NavBar />
+      <Page />
     </div>
   )
 }
