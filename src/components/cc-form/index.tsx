@@ -1,10 +1,10 @@
 import React from 'react';
-import './styles.scss';
+import styles from './styles.module.scss';
 
 export const Form = () => {
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.cc_number}>
         <label htmlFor="cc_number">Card Number:</label>
         <input
           id="cc_number"
@@ -14,7 +14,7 @@ export const Form = () => {
         />
       </div>
 
-      <fieldset>
+      <fieldset className={styles.cc_exp}>
         <legend>Expiry Date (MM / YY):</legend>
         <input
           id="cc_expiry_month"
@@ -33,10 +33,10 @@ export const Form = () => {
         />
       </fieldset>
 
-      <div>
-        <label htmlFor="cc_code">Security Code:</label>
+      <div className={styles.cc_csc}>
+        <label htmlFor="cc_csc">Security Code:</label>
         <input
-          id="cc_code"
+          id="cc_csc"
           type="text"
           inputMode="tel"
           maxLength={4}
@@ -44,7 +44,7 @@ export const Form = () => {
         />
       </div>
 
-      <button type="submit">Submit</button>
+      <button className={styles.submitButton} type="submit">Submit</button>
     </form>
   );
 }
