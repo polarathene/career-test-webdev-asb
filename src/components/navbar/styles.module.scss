@@ -31,10 +31,7 @@
 
   > div {
     position: absolute;
-    // earlier approach:
-    // top: 48px;
-    // better? uses 100% of navbar height (header element which is `position: relative`)
-    top: 100%;
+    top: 100%; // height of header (relies on header having `position: relative`)
     left: 0;
 
     width: 100%;

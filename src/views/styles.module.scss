@@ -1,15 +1,5 @@
 .page {
-  /*
-  Earlier approach with nav header element used `position: absolute`
-  changed to `position: relative`, so normal document flow doesn't require
-  maintaining the navbar height in sync, however will be required if using a
-  fixed header that reveals on scroll.
-  */
-  // margin-top: 48px; // navbar is absolute
-
   > p {
     text-align: center;
-    // height: 2000px; // debug height for testing overflow scrolling
-    background-color: orange; // debug colour
   }
 }
