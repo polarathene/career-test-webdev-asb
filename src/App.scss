@@ -1,6 +1,17 @@
+html {
+  background-color: blue; // debug colour
+}
+body {
+  background-color: green; // debug colour
+}
+
+#root {
+  background-color: red; // debug colour
+}
+
 .App {
   color: white;
-  background-color: #242738;
+  background-color: #242738c5; // debug colour (added transparency), should move up to html element
 
   min-width: 180px;
   min-height: 100vh;
