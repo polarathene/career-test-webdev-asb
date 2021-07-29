@@ -7,6 +7,20 @@ body {
 
 #root {
   background-color: red; // debug colour
+
+  /*
+  Establishes a viewport scrolling container:
+
+  - `position: absolute` removes the dependency of html and body element parent dimensions for % units.
+
+  - `overflow-y: auto` ensures any overflowing content will be scrolled from this layer,
+  keeping the bg color consistent to this layer.
+  (prevents a height delta causing height mismatch/leaking other layers bg colour).
+  */
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .App {
@@ -14,7 +28,24 @@ body {
   background-color: #242738c5; // debug colour (added transparency), should move up to html element
 
   min-width: 180px;
-  min-height: 100vh;
+  // Use up height of parent element (viewport height) as a minimum if content is below that.
+  min-height: 100%;
+
+  /*
+  Don't `overflow-y: auto` here as the min-width of this layer can mean the
+  vertical scrollbar will be hidden if the viewport width is too small,
+  requiring horizontal scrolling to realize a vertical scrollbar is present..
+
+  `overflow: hidden` can be used here like below with `height: 100%` for
+  preventing scrolling when an overlay (eg open mobile nav menu) is active.
+
+  However as we can't use `overflow-y: auto` as well on the same layer,
+  this will result in always resetting/losing the scroll position which is
+  undesirable. That is caused by `overflow: hidden` toggling affecting the
+  parent (`#root`) overflow scrollbar/height, causing it to lose the scroll state.
+  */
+  // height: 100%;
+  // overflow-y: hidden;
 
   display: flex;
   flex-direction: column;
