@@ -6,6 +6,7 @@ export const Input: React.FC<InputProps> = ({ id, label, ...props }) => (
     <input
       className={styles.input}
       id={id}
+      name={id}
       type="text"
       inputMode="tel"
       autoComplete={id.replace(/_/g, "-")}
