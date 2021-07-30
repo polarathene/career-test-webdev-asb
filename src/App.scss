@@ -26,4 +26,11 @@ which is sized and stretched to fill the viewport without issues that vh/vw have
   justify-content: flex-start;
 
   color: white;
+
+  /*
+  navbar menu content relies on this to exceed viewport height/width if scrollbars are present.
+  if omitting have menu content div use `min-width: 180px`, otherwise it's width as
+  shown by bg colour will be viewport only, not full width when horizontally scrollable.
+  */
+  position: relative;
 }

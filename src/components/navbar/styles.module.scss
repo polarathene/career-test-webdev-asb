@@ -1,7 +1,6 @@
 .header {
-  position: relative;
+  // position: relative; // important for the menu content div styles
   width: 100%;
-  height: 48px;
   padding: 8px;
 
   display: flex;
@@ -9,13 +8,15 @@
   justify-content: space-between; // left align the menu toggle, right align the h1
   gap: 8px;
 
-  background-color: blue;
+  background-color: hsl(162deg 65% 45%);
 
   > h1 {
     order: 1; // swap visual order with nav toggle button
     margin: 0;
-    font-size: 1rem; //16px
     transition: font-size 0.3s;
+
+    font-size: 1.2rem;
+    text-align: right;
 
     @media (min-width: 360px) {
       font-size: 28px;
@@ -59,19 +60,45 @@
   }
 
   > div {
-    position: absolute;
-    top: 100%; // height of header (relies on header having `position: relative`)
     left: 0;
 
     width: 100%;
     margin: 0;
     padding: 0;
 
+    // Debug colour for experimenting with layout approaches.
     background-color: green;
+    // Same as bg colour for `html`; hides the page content below by covering it.
+    background-color: rgb(36 39 56);
+
+    /* === Approach #1 === */
+    // Seems "hacky" with no apparent control regarding the hidden scrollbar issue:
+    position: fixed; // Note dimensions can overlap/cover any visible scrollbars and prevents interaction with them.
+    // height: 100%; // extends to full viewport height
+    margin-top: 16px; // 8px padding (nav around button) + 8px added margin (after nav height)
+
+    /* === Approach #2 === */
+    // This works well if you don't need to extend the height to bottom of viewport
+    // Relies on header element having `position: relative`.
+    position: absolute;
+    top: 100%;
+    margin-top: 8px; // 8px added margin (after nav height)
+
+    /* === Approach #3 === */
+    // This version of absolute requires header element to not have `position: relative`
+    // So that it can properly be contained within the viewport bounds.
+    position: absolute;
+    top: 80px; // 64px header element + 16px margin (8px top and bottom)
+    bottom: 0; // Stretch to bottom of viewport exactly.
+    margin: 0;
+
+    // Required if not using `position: relative` on .App, but using approach #3 above:
+    // min-width: 180px;
 
     > p {
       margin: 0;
       padding: 8px;
+      text-align: center;
     }
   }
 }
