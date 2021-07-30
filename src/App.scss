@@ -1,16 +1,36 @@
-@import-normalize;
+html {
+  background-color: rgb(36 39 56);
+}
 
-*, *::after, *::before {
-  box-sizing: border-box;
+/*
+- Ensures any vertical overflowing content will be scrolled from this layer,
+which is sized and stretched to fill the viewport without issues that vh/vw have.
+- Child element .App will size based on #root as it's parent.
+- `min-width` must not be set on this element due to overflow behaviour rendering scrollbars.
+*/
+#root {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .App {
-  color: white;
-  background-color: #242738;
+  min-width: 180px;
+  // Uses viewport height (from #root) unless content height exceeds it.
+  min-height: 100%;
 
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+
+  color: white;
+  padding: 8px;
+
+  /*
+  navbar menu content relies on this to exceed viewport height/width if scrollbars are present.
+  if omitting have menu content div use `min-width: 180px`, otherwise it's width as
+  shown by bg colour will be viewport only, not full width when horizontally scrollable.
+  */
+  position: relative;
 }

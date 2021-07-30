@@ -1,0 +1,38 @@
+@use './styles/button';
+@use './styles/navmenu';
+
+.header {
+  width: 100%;
+  padding: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between; // left align the menu toggle, right align the h1
+  gap: 8px;
+
+  background-color: hsl(162deg 65% 45%);
+  border-radius: 4px;
+
+  > h1 {
+    order: 1; // swap visual order with nav toggle button
+    margin: 0;
+    transition: font-size 0.3s;
+
+    font-size: 1.2rem;
+    text-align: right;
+
+    @media (min-width: 360px) {
+      font-size: 28px;
+    }
+  }
+}
+
+.navbar {
+  > button {
+    @include button.menu();
+  }
+
+  > div {
+    @include navmenu.content();
+  }
+}

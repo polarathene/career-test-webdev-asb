@@ -1,0 +1,35 @@
+@mixin menu() {
+  // Style reset
+  background:transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+
+  // Width and Height are sized to scale proportionally to the SVG icon size (1em).
+  // Adjusting font-size will scale all dimensions accordingly.
+  font-size: 2rem;
+  width: 1.5em;
+  height: 1.5em;
+  // Affects vertical alignment of svg icons
+  line-height: 0;
+
+  // Circle button style with a box-shadow as a border (that doesn't interfere with layout)
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.25);
+  &:hover, &:active {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  --border: 0 0 0 2px hsla(170deg, 90%, 70%, 0.5);
+  --border-focus: inset var(--border), 0 0 0 4px dodgerblue;
+  box-shadow: var(--border);
+  &:focus {
+    outline: none;
+    box-shadow: var(--border-focus);
+
+    // Remove focus-ring for non-keyboard triggered focus
+    &:not(:focus-visible) { box-shadow: var(--border); }
+  }
+}
