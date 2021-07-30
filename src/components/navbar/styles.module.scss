@@ -1,5 +1,5 @@
 .header {
-  // position: relative; // important for the menu content div styles
+  // position: relative; // Required for menu content div `Approach #2` styles
   width: 100%;
   padding: 8px;
 
@@ -27,6 +27,7 @@
 
 .navbar {
   > button {
+    // Style reset
     background:transparent;
     border: none;
     cursor: pointer;
@@ -34,29 +35,30 @@
     margin: 0;
     padding: 0;
 
-    // Could alternatively use 1.5em
-    width: 3rem;
-    height: 3rem;
-    // Affects size of icon and this button, which all use em for sizing
+    // Width and Height are sized to scale proportionally to the SVG icon size (1em).
+    // Adjusting font-size will scale all dimensions accordingly.
     font-size: 2rem;
+    width: 1.5em;
+    height: 1.5em;
     // Affects vertical alignment of svg icons
     line-height: 0;
 
     // Circle button style with a box-shadow as a border (that doesn't interfere with layout)
-    background-color: rgba(0, 0, 0, 0.25);
-    box-shadow: 0 0 0 2px hsla(170deg, 90%, 70%, 0.5);
     border-radius: 50%;
-
+    background-color: rgba(0, 0, 0, 0.25);
     &:hover, &:active {
       background-color: rgba(0, 0, 0, 0.5);
     }
 
+    --border: 0 0 0 2px hsla(170deg, 90%, 70%, 0.5);
+    --border-focus: inset var(--border), 0 0 0 4px dodgerblue;
+    box-shadow: var(--border);
     &:focus {
       outline: none;
-      box-shadow: inset 0 0 0 2px hsla(170deg, 90%, 70%, 0.5), 0 0 0 4px dodgerblue;
+      box-shadow: var(--border-focus);
 
       // Remove focus-ring for non-keyboard triggered focus
-      &:not(:focus-visible) { box-shadow: 0 0 0 2px hsla(170deg, 90%, 70%, 0.5); }
+      &:not(:focus-visible) { box-shadow: var(--border); }
     }
   }
 
@@ -93,7 +95,7 @@
     bottom: 0; // Stretch to bottom of viewport exactly.
     margin: 0;
 
-    // Required if not using `position: relative` on .App, but using approach #3 above:
+    // Required if not using `position: relative` on .App, but using `Approach #3` above:
     // min-width: 180px;
 
     > p {
