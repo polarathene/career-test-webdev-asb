@@ -1,10 +1,11 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
+import Form from './components/cc-form'
 
 function App() {
   return (
     <div className="App">
-      Hello :)
+      <Form />
     </div>
   )
 }

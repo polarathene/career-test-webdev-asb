@@ -1,7 +1,12 @@
+@import-normalize;
+
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
 .App {
-  text-align: center;
   color: white;
-  background-color: #282c34;
+  background-color: #242738;
 
   min-height: 100vh;
   display: flex;

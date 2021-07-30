@@ -1,0 +1,67 @@
+@use './styles/input';
+@use './styles/submit';
+
+.form {
+  display: grid;
+  align-items: end;
+  grid-gap: 16px;
+  column-gap: 32px; // Specifically for expiry + code row
+  grid-template-columns: 1fr;
+
+  box-sizing: border-box;
+  min-width: 180px;
+  max-width: 360px;
+  padding: 8px;
+
+  line-height: 1.5;
+
+  @media (min-width: 360px) {
+    grid-template-columns: repeat(10, 1fr);
+    padding: 16px;
+
+    > div.cc_number, > button.submit {
+      grid-column: span 10;
+    }
+    > fieldset.cc_exp {
+      grid-column: span 6;
+    }
+    > div.cc_csc {
+      grid-column: span 4;
+    }
+  }
+
+  @include input.label-legend();
+}
+
+
+/* === Expiry Date === */
+fieldset.cc_exp {
+  /* reset */
+  border: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+
+  > span {
+    margin-inline: 8px;
+  }
+
+  /* To continue using border-box, calc is used to include padding for width */
+  > input {
+    min-width: calc(2ch + 32px);
+    text-align: center;
+  }
+}
+
+
+/* === Security Code === */
+div.cc_csc {
+  @media (min-width: 360px) {
+    > input {
+      min-width: calc(4ch + 32px);
+      text-align: center;
+    }
+  }
+}
