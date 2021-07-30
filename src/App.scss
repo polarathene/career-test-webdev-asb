@@ -23,9 +23,9 @@ which is sized and stretched to fill the viewport without issues that vh/vw have
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
 
   color: white;
+  padding: 8px;
 
   /*
   navbar menu content relies on this to exceed viewport height/width if scrollbars are present.
