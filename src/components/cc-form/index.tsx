@@ -1,11 +1,14 @@
 import styles from './styles.module.scss'
 import Input from './components/input'
-import schema, {CreditCard} from './schema'
+import schema, { CreditCard } from './schema'
 import { ZodError } from 'zod'
+import { useState } from 'react'
 
 export const Form = () => {
+  const {errors, handleSubmit} = useForm<CreditCard>()
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
       <div className={styles.cc_number}>
         <Input id="cc_number" label="Card Number" />
       </div>
@@ -22,29 +25,83 @@ export const Form = () => {
       </div>
 
       <button className={styles.submit} type="submit">Submit</button>
+
+      { errors ? <ErrorList errors={errors} /> : null }
     </form>
   )
 }
 
-/* === form onSubmit === */
+const ErrorList: React.FC<ErrorListProps> = ({errors}) => (
+  <div className={styles.errors}>
+    <h2>Error</h2>
+    <p><em>Unable to submit details due to the following:</em></p>
+    <ul>
+      <ErrorItem id="cc_number"    label="Card Number"   errors={errors} />
+      <ErrorItem id="cc_exp_month" label="Expiry Month"  errors={errors} />
+      <ErrorItem id="cc_exp_year"  label="Expiry Year"   errors={errors} />
+      <ErrorItem id="cc_csc"       label="Security Code" errors={errors} />
+    </ul>
+  </div>
+)
 
-// Just outputs the values to console, unless the expiry date is invalid.
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
+const ErrorItem: React.FC<ErrorItemProps> = ({errors, id, label}) => {
+  const error = errors?.issues.filter(err => err.path.includes(id))
 
-  // Converts form data into object key/value pairs, but only if name attribute exists on the input
-  const result = schema.safeParse(
-    Object.fromEntries(new FormData(e.currentTarget))
-  )
-
-  if (!result.success) {
-    onInvalid(result.error)
-  } else {
-    onValid(result.data)
-  }
+  return error && error.length > 0 ? (
+    <li>
+      <span>{label}</span>
+      {error.map(err =>
+      <span>{err.message}</span>
+      )}
+    </li>
+  ) : null
 }
 
-function onInvalid(error: ZodError<CreditCard>) {
+type ErrorListProps = {
+  errors?: ZodError<CreditCard>
+}
+
+type ErrorItemProps = {
+  id: keyof CreditCard
+  label: string
+  errors?: ZodError<CreditCard>
+}
+
+/* === form onSubmit === */
+
+// I could not make TS happy for _onValid with generic type `T` due to TS2345
+// Used `T | any` until I have a better grasp of TS.
+type onSubmit<T> = (
+  _onValid: (data: T | any) => void,
+  _onInvalid: (error: ZodError) => void
+) => (e: React.FormEvent<HTMLFormElement>) => void
+
+// Again had some TS typing issues with `useState()`. The error object doesn't exist initially,
+// also accepting `undefined` seems to fix it, unclear if that's advised?
+function useForm<T>() {
+  const [errors, setErrors] = useState<ZodError | undefined>();
+
+  const handleSubmit: onSubmit<T> = (_onValid, _onInvalid) => (e) => {
+    e.preventDefault()
+
+    // Converts form data into object key/value pairs, but only if name attribute exists on the input
+    const result = schema.safeParse(
+      Object.fromEntries(new FormData(e.currentTarget))
+    )
+
+    if (!result.success) {
+      setErrors(result.error)
+      _onInvalid(result.error)
+    } else {
+      setErrors(undefined)
+      _onValid(result.data)
+    }
+  }
+
+  return { errors, handleSubmit }
+}
+
+function onInvalid(error: ZodError) {
   console.error(
     "Submission Failure:\n",
     error.issues

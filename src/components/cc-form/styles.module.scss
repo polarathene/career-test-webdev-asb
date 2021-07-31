@@ -1,3 +1,4 @@
+@use './styles/errors';
 @use './styles/input';
 @use './styles/submit';
 
@@ -16,7 +17,6 @@
 
   @media (min-width: 360px) {
     grid-template-columns: repeat(10, 1fr);
-    padding: 16px;
 
     > div.cc_number, > button.submit {
       grid-column: span 10;
@@ -26,6 +26,9 @@
     }
     > div.cc_csc {
       grid-column: span 4;
+    }
+    > div.errors {
+      grid-column: span 10;
     }
   }
 
@@ -63,4 +66,9 @@ div.cc_csc {
       text-align: center;
     }
   }
+}
+
+
+div.errors {
+  @include errors.styles();
 }
