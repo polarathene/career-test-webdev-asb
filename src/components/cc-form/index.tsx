@@ -1,9 +1,18 @@
 import styles from './styles.module.scss'
-import Input from './components/input'
+import { Error, Input} from './components'
+import { CreditCard } from './schema'
+import { useForm, onValid, onInvalid } from './submitLogic'
 
 export const Form = () => {
+  const {
+    handleSubmit,
+    formState: { errors, isValid, isSubmitted },
+  } = useForm<CreditCard>()
+
+  const hasErrors = isSubmitted && !isValid
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
       <div className={styles.cc_number}>
         <Input id="cc_number" label="Card Number" />
       </div>
@@ -20,32 +29,15 @@ export const Form = () => {
       </div>
 
       <button className={styles.submit} type="submit">Submit</button>
+
+      <Error.List className={styles.errors} hasErrors={hasErrors}>
+        <Error.Item id="cc_number"    label="Card Number"   errors={errors} />
+        <Error.Item id="cc_exp_month" label="Expiry Month"  errors={errors} />
+        <Error.Item id="cc_exp_year"  label="Expiry Year"   errors={errors} />
+        <Error.Item id="cc_csc"       label="Security Code" errors={errors} />
+      </Error.List>
     </form>
   )
-}
-
-/* === form onSubmit === */
-
-const currentMonth = new Date().getUTCMonth() + 1
-const currentYear  = new Date().getUTCFullYear() - 2000
-
-// Just outputs the values to console, unless the expiry date is invalid.
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-
-  const form  = e.currentTarget
-  const month = parseInt(form.cc_exp_month.value)
-  const year  = parseInt(form.cc_exp_year.value)
-
-  if (year >= currentYear && month > currentMonth) {
-    console.log({
-      card_number:   parseInt(form.cc_number.value),
-      security_code: parseInt(form.cc_csc.value),
-      expires:       `${month} / ${year}`
-    })
-  } else {
-    console.log("Expiry date is invalid! :(")
-  }
 }
 
 export default Form

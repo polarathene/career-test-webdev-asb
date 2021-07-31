@@ -1,0 +1,45 @@
+@mixin styles() {
+  font-size: 1rem;
+  line-height: inherit;
+
+  > h2 {
+    margin: 0;
+    padding: 8px;
+
+    --errorBorder: 3px solid hsl(350deg, 70%, 50%);
+    border-left: var(--errorBorder);
+    border-right: var(--errorBorder);
+    border-radius: 4px;
+
+    background-color: hsl(250deg, 20%, 25%);
+    text-transform: uppercase;
+  }
+
+  > ul {
+    list-style: none;
+    padding: 0;
+
+    > li {
+      padding: 10px;
+
+      border: 2px solid hsl(0deg 70% 46%);
+      border-radius: 4px;
+
+      > span {
+        display:block;
+        color: hsl(0deg, 60%, 50%);
+
+        // Error label
+        &:first-child {
+          color: hsl(0deg, 100%, 60%);
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+      }
+
+      + li {
+        margin-top: 8px;
+      }
+    }
+  }
+}
