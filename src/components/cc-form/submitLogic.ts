@@ -13,9 +13,13 @@ type onSubmit<T> = (
 // also accepting `undefined` seems to fix it, unclear if that's advised?
 function useForm<T>() {
   const [errors, setErrors] = useState<ZodError | undefined>();
+  const [isSubmitted, setSubmitStatus] = useState(false)
+  const [isValid, setValid] = useState(false)
 
   const handleSubmit: onSubmit<T> = (_onValid, _onInvalid) => (e) => {
     e.preventDefault()
+
+    setSubmitStatus(true)
 
     // Converts form data into object key/value pairs, but only if name attribute exists on the input
     const result = schema.safeParse(
@@ -24,14 +28,19 @@ function useForm<T>() {
 
     if (!result.success) {
       setErrors(result.error)
+      setValid(false)
       _onInvalid(result.error)
     } else {
       setErrors(undefined)
+      setValid(true)
       _onValid(result.data)
     }
   }
 
-  return { errors, handleSubmit }
+  return {
+    handleSubmit,
+    formState: {errors, isValid, isSubmitted},
+  }
 }
 
 function onInvalid(error: ZodError) {

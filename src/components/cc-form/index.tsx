@@ -4,7 +4,12 @@ import { CreditCard } from './schema'
 import { useForm, onValid, onInvalid } from './submitLogic'
 
 export const Form = () => {
-  const {errors, handleSubmit} = useForm<CreditCard>()
+  const {
+    handleSubmit,
+    formState: { errors, isValid, isSubmitted },
+  } = useForm<CreditCard>()
+
+  const hasErrors = isSubmitted && !isValid
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
@@ -25,7 +30,7 @@ export const Form = () => {
 
       <button className={styles.submit} type="submit">Submit</button>
 
-      <Error.List className={styles.errors}>
+      <Error.List className={styles.errors} hasErrors={hasErrors}>
         <Error.Item id="cc_number"    label="Card Number"   errors={errors} />
         <Error.Item id="cc_exp_month" label="Expiry Month"  errors={errors} />
         <Error.Item id="cc_exp_year"  label="Expiry Year"   errors={errors} />

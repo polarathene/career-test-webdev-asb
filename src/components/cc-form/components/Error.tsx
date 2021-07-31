@@ -1,8 +1,8 @@
 import { ZodError } from 'zod'
 import type { CreditCard } from '../schema'
 
-export const List: React.FC<ErrorListProps> = ({className, children}) => (
-  <div className={className}>
+export const List: React.FC<ErrorListProps> = ({className, hasErrors, children}) => (
+  <div className={className} style={!hasErrors ? {display: "none"} : undefined}>
     <h2>Error</h2>
     <p><em>Unable to submit details due to the following:</em></p>
     <ul>
@@ -26,6 +26,7 @@ export const Item: React.FC<ErrorItemProps> = ({errors, id, label}) => {
 
 type ErrorListProps = {
   className?: string
+  hasErrors: boolean
 }
 
 type ErrorItemProps = {
