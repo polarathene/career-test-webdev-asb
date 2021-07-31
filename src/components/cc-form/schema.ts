@@ -20,6 +20,7 @@ const errorDigits     = { message: "Expected only numbers" }
 
 // Custom Types:
 const zDigitString = z.string().regex(r_isDigits, errorDigits)
+const zStringNumber = z.string().transform(s => parseInt(s))
 /*
 This schema type handles field level validation, a post validation on
 the object is performed with `superRefine()`; but unless inlining the method
@@ -30,8 +31,8 @@ or adding friction and noise through what is effectively redundant typing?
 */
 export const _zCreditCard = z.object({
   cc_number: zDigitString,
-  cc_exp_month: z.number().int().refine(inRange(1, 12), errorRangeMonth),
-  cc_exp_year: z.number().int().min(currentYear),
+  cc_exp_month: zStringNumber.refine(inRange(1, 12), errorRangeMonth),
+  cc_exp_year: zStringNumber,
   cc_csc: zDigitString.refine(inRangeStr(3, 4), errorRangeCSC),
 // }).superRefine(isNotExpired)
 })
@@ -61,12 +62,25 @@ const isNotExpired = (
   {cc_exp_month: m, cc_exp_year: y}: z.infer<typeof _zCreditCard>,
   ctx: z.RefinementCtx
 ) => {
-  if (y >= currentYear && m <= currentMonth) {
+
+  // How is this meant to be typed/handled appropriately?
+  // Repeat the definition inline, make a pointless type or
+  // use any like so?:
+  const error: any = {
+    code: z.ZodIssueCode.custom,
+    message: `Expiry date cannot be in the past`,
+  }
+  // It seems inferrence works well without any if using a literal obj?:
+  if (y < currentYear) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `Expiry date cannot be in the past`,
-      path: ['cc_exp_month'],
+      ...error,
+      path: ['cc_exp_year']
     })
+  }
+  // Requires typing `any`, perhaps due to mutating the obj
+  else if (y === currentYear && m <= currentMonth) {
+    error.path = ['cc_exp_month']
+    ctx.addIssue(error)
   }
 }
 
