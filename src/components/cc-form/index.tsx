@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import styles from './styles.module.scss'
 import { Error, Input} from './components'
 import { CreditCard } from './schema'
@@ -9,23 +10,55 @@ export const Form = () => {
     formState: { errors, isValid, isSubmitted },
   } = useForm<CreditCard>()
 
+  // All this to get an error status bool per field:
+  const [hasError, setError] = useState(fieldStatus)
+  useEffect(() => {
+    setError(
+      Object.keys(fieldStatus).reduce((fields, key) => {
+        return {
+          ...fields,
+          [key]: errors?.issues.some(err => err.path.includes(key))
+        }
+      }, fieldStatus)
+    )
+  }, [errors?.issues])
+
   const hasErrors = isSubmitted && !isValid
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
       <div className={styles.cc_number}>
-        <Input id="cc_number" label="Card Number" />
+        <Input
+          id="cc_number"
+          label="Card Number"
+          hasError={hasError.cc_number}
+        />
       </div>
 
       <fieldset className={styles.cc_exp}>
         <legend>Expiry Date (MM / YY):</legend>
-        <Input id="cc_exp_month" maxLength={2} />
+        <Input
+          id="cc_exp_month"
+          maxLength={2}
+          aria-label="Month, Format: 2 digits"
+          hasError={hasError.cc_exp_month}
+        />
         <span>/</span>
-        <Input id="cc_exp_year" maxLength={2} />
+        <Input
+          id="cc_exp_year"
+          maxLength={2}
+          aria-label="Year, Format: 2 digits"
+          hasError={hasError.cc_exp_year}
+        />
       </fieldset>
 
       <div className={styles.cc_csc}>
-        <Input id="cc_csc" maxLength={4} label="Security Code" />
+        <Input
+          id="cc_csc"
+          maxLength={4}
+          label="Security Code"
+          hasError={hasError.cc_csc}
+        />
       </div>
 
       <button className={styles.submit} type="submit">Submit</button>
@@ -38,6 +71,13 @@ export const Form = () => {
       </Error.List>
     </form>
   )
+}
+
+const fieldStatus = {
+  cc_number: false,
+  cc_exp_month: false,
+  cc_exp_year: false,
+  cc_csc: false,
 }
 
 export default Form

@@ -3,9 +3,11 @@ import type { CreditCard } from '../schema'
 
 export const List: React.FC<ErrorListProps> = ({className, hasErrors, children}) => (
   <div className={className} style={!hasErrors ? {display: "none"} : undefined}>
-    <h2>Error</h2>
-    <p><em>Unable to submit details due to the following:</em></p>
-    <ul>
+    <h2 id="aria_errorlist" aria-label="Error,">Error</h2>
+    <p id="aria_errormsg">
+      <em>Unable to submit details due to the following:</em>
+    </p>
+    <ul aria-live="polite" aria-relevant="additions text">
       {children}
     </ul>
   </div>
@@ -16,9 +18,9 @@ export const Item: React.FC<ErrorItemProps> = ({errors, id, label}) => {
 
   return error && error.length > 0 ? (
     <li>
-      <span>{label}</span>
+      <span id={`err_${id}_label`}>{label}</span>
       {error.map(err =>
-      <span>{err.message}</span>
+      <span id={`err_${id}`}>{err.message}</span>
       )}
     </li>
   ) : null
