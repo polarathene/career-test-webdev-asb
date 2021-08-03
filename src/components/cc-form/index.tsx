@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import styles from './styles.module.scss'
 import { Error, Input} from './components'
-import { CreditCard } from './schema'
+import { _zCreditCard, CreditCard } from './schema'
 import { useForm, onValid, onInvalid } from './submitLogic'
 
 export const Form = () => {
@@ -11,16 +11,15 @@ export const Form = () => {
   } = useForm<CreditCard>()
 
   // All this to get an error status bool per field:
-  const [hasError, setError] = useState(fieldStatus)
+  type Fields = Record<any, never> | Record<keyof CreditCard, boolean>
+  const [hasError, setError] = useState<Fields>({})
+
   useEffect(() => {
-    setError(
-      Object.keys(fieldStatus).reduce((fields, key) => {
-        return {
-          ...fields,
-          [key]: errors?.issues.some(err => err.path.includes(key))
-        }
-      }, fieldStatus)
-    )
+    const fields: any = {}
+    Object.keys(_zCreditCard.shape).forEach(key => {
+      fields[key] = errors?.issues.some(err => err.path.includes(key))
+    })
+    setError(fields)
   }, [errors?.issues])
 
   const hasErrors = isSubmitted && !isValid
@@ -71,13 +70,6 @@ export const Form = () => {
       </Error.List>
     </form>
   )
-}
-
-const fieldStatus = {
-  cc_number: false,
-  cc_exp_month: false,
-  cc_exp_year: false,
-  cc_csc: false,
 }
 
 export default Form
