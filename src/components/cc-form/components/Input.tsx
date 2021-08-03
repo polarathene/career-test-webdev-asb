@@ -21,7 +21,7 @@ export const Input: React.FC<InputProps> = ({ id, label, hasError, ...props }) =
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   id: string
   label?: string
-  hasError: boolean
+  hasError?: boolean
 }
 
 export default Input

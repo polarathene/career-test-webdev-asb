@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
 import styles from './styles.module.scss'
 import { Error, Input} from './components'
-import { _zCreditCard, CreditCard } from './schema'
+import { CreditCard } from './schema'
 import { useForm, onValid, onInvalid } from './submitLogic'
 
 export const Form = () => {
@@ -10,18 +9,7 @@ export const Form = () => {
     formState: { errors, isValid, isSubmitted },
   } = useForm<CreditCard>()
 
-  // All this to get an error status bool per field:
-  type Fields = Record<any, never> | Record<keyof CreditCard, boolean>
-  const [hasError, setError] = useState<Fields>({})
-
-  useEffect(() => {
-    const fields: any = {}
-    Object.keys(_zCreditCard.shape).forEach(key => {
-      fields[key] = errors?.issues.some(err => err.path.includes(key))
-    })
-    setError(fields)
-  }, [errors?.issues])
-
+  const hasError = (id: keyof CreditCard) => errors?.issues.some(err => err.path.includes(id))
   const hasErrors = isSubmitted && !isValid
 
   return (
@@ -30,7 +18,7 @@ export const Form = () => {
         <Input
           id="cc_number"
           label="Card Number"
-          hasError={hasError.cc_number}
+          hasError={hasError("cc_number")}
         />
       </div>
 
@@ -40,14 +28,14 @@ export const Form = () => {
           id="cc_exp_month"
           maxLength={2}
           aria-label="Month, Format: 2 digits"
-          hasError={hasError.cc_exp_month}
+          hasError={hasError("cc_exp_month")}
         />
         <span>/</span>
         <Input
           id="cc_exp_year"
           maxLength={2}
           aria-label="Year, Format: 2 digits"
-          hasError={hasError.cc_exp_year}
+          hasError={hasError("cc_exp_year")}
         />
       </fieldset>
 
@@ -56,7 +44,7 @@ export const Form = () => {
           id="cc_csc"
           maxLength={4}
           label="Security Code"
-          hasError={hasError.cc_csc}
+          hasError={hasError("cc_csc")}
         />
       </div>
 
