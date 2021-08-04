@@ -10,18 +10,30 @@ export const NavMenu: React.FC<HTMLProps> = () => {
     <header className={styles.header}>
       <h1>{isOpen ? "Menu" : "Register Card Form"}</h1>
       <nav className={styles.navbar}>
-        <button onClick={toggleMenu}>
-        {isOpen
-          ? <FaArrowLeft aria-hidden="true" />
-          : <FaHamburger aria-hidden="true" />
-        }
-        </button>
+        <MenuToggle isOpen={isOpen} onClick={toggleMenu} />
         <div style={{display: isOpen ? "block" : "none" }}>
           <p>This is menu content.</p>
         </div>
       </nav>
     </header>
   )
+}
+
+const MenuToggle: React.FC<ButtonProps> = ({isOpen, onClick, className}) => (
+  <button
+    onClick={onClick}
+    aria-label={`${isOpen ? "Close" : "Open"} navigation menu`}
+    aria-expanded={isOpen}
+  >
+    {isOpen
+      ? <FaArrowLeft aria-hidden="true" />
+      : <FaHamburger aria-hidden="true" />
+    }
+  </button>
+)
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  isOpen: boolean
 }
 
 type HTMLProps = React.HTMLAttributes<HTMLElement>

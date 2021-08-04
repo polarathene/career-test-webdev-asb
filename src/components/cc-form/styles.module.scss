@@ -69,6 +69,6 @@ div.cc_csc {
 }
 
 
-div.errors {
+div.errors > div {
   @include errors.styles();
 }
