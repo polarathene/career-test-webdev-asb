@@ -13,17 +13,19 @@ export const Form = () => {
   const hasErrors = isSubmitted && !isValid
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
-      <Inputs.CardNumber hasError={hasError} />
+    <div className={styles.formWrapper}>
+      <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
+        <Inputs.CardNumber hasError={hasError} />
 
-      <Inputs.ExpiryDate
-        month={<Inputs.ExpMonth hasError={hasError} />}
-        year ={<Inputs.ExpYear  hasError={hasError} />}
-      />
+        <Inputs.ExpiryDate
+          month={<Inputs.ExpMonth hasError={hasError} />}
+          year ={<Inputs.ExpYear  hasError={hasError} />}
+        />
 
-      <Inputs.SecurityCode hasError={hasError} />
+        <Inputs.SecurityCode hasError={hasError} />
 
-      <Submit className={styles.submit} hasErrors={hasErrors} />
+        <Submit className={styles.submit} hasErrors={hasErrors} />
+      </form>
 
       <Error.List className={styles.errors} hasErrors={hasErrors}>
         <Error.Item id="cc_number"    label="Card Number"   errors={errors} />
@@ -31,7 +33,7 @@ export const Form = () => {
         <Error.Item id="cc_exp_year"  label="Expiry Year"   errors={errors} />
         <Error.Item id="cc_csc"       label="Security Code" errors={errors} />
       </Error.List>
-    </form>
+    </div>
   )
 }
 

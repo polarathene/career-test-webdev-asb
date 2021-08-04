@@ -8,7 +8,7 @@ content when appended to the DOM.
 but Chrome will not announce content properly with visibility toggle,
 especially if inline styled elements are present.
 */
-export const List: React.FC<ErrorListProps> = ({className, hasErrors, children}) => (
+export const List: React.FC<ErrorListProps> = ({ className, hasErrors, children }) => (
   <div className={className} role="alert" aria-live="assertive">
     <div style={{ display: hasErrors ? "block" : "none" }}>
       <h2 id="aria_errorlist" aria-label="Error,">Error</h2>
@@ -22,7 +22,7 @@ export const List: React.FC<ErrorListProps> = ({className, hasErrors, children})
   </div>
 )
 
-export const Item: React.FC<ErrorItemProps> =  ({errors, id, label}) => {
+export const Item: React.FC<ErrorItemProps> = ({ errors, id, label }) => {
   const error = errors?.issues.filter(err => err.path.includes(id))
 
   return error && error.length > 0 ? (

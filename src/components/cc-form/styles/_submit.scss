@@ -3,9 +3,10 @@ button.submit {
   cursor: pointer;
   transition: all 0.3s ease;
 
-  margin-top: auto;
-  padding: 8px 32px;
+  // Useful if you want to push it down to the edge of the viewport when the leement has excess height available
+  // margin-top: auto;
 
+  padding: 8px 32px;
   width: 100%;
   height: 2.8rem;
 
