@@ -1,5 +1,5 @@
 import styles from './styles.module.scss'
-import { Error, Input, Submit } from './components'
+import { Error, Inputs, Submit } from './components'
 import { CreditCard } from './schema'
 import { useForm, onValid, onInvalid } from './submitLogic'
 
@@ -14,39 +14,14 @@ export const Form = () => {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
-      <div className={styles.cc_number}>
-        <Input
-          id="cc_number"
-          label="Card Number"
-          hasError={hasError("cc_number")}
-        />
-      </div>
+      <Inputs.CardNumber hasError={hasError} />
 
-      <fieldset className={styles.cc_exp}>
-        <legend>Expiry Date (MM / YY):</legend>
-        <Input
-          id="cc_exp_month"
-          maxLength={2}
-          aria-label="Month, Format: 2 digits."
-          hasError={hasError("cc_exp_month")}
-        />
-        <span>/</span>
-        <Input
-          id="cc_exp_year"
-          maxLength={2}
-          aria-label="Year, Format: 2 digits."
-          hasError={hasError("cc_exp_year")}
-        />
-      </fieldset>
+      <Inputs.ExpiryDate
+        month={<Inputs.ExpMonth hasError={hasError} />}
+        year ={<Inputs.ExpYear  hasError={hasError} />}
+      />
 
-      <div className={styles.cc_csc}>
-        <Input
-          id="cc_csc"
-          maxLength={4}
-          label="Security Code"
-          hasError={hasError("cc_csc")}
-        />
-      </div>
+      <Inputs.SecurityCode hasError={hasError} />
 
       <Submit className={styles.submit} hasErrors={hasErrors} />
 
