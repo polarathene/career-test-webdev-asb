@@ -47,45 +47,23 @@ const min: zMin<number> = (min, message) => (val, ctx) => {
 
 /*
 This schema type handles field level validation, a post validation on
-the object is performed with `superRefine()`; but unless inlining the method
-to take advantage of infererence we must derive a temporary type.. The whole
-point of zod is to provide the type instead of repeating the definition.
-Unfortunately, the joys of typing encourage inlining as much for inference
-or adding friction and noise through what is effectively redundant typing?
+the object is performed with `superRefine()` afterwards. It could be considered
+as compound validation as once field level validation passes, we can validate across
+values.
 */
 export const _zCreditCard = z.object({
   cc_number: zDigitString,
   cc_exp_month: zStringNumber.refine(inRange(1, 12), errorRangeMonth),
   cc_exp_year: zStringNumber.superRefine(min(currentYear, errorMinYear)),
   cc_csc: zDigitString.refine(inRangeStr(3, 4), errorRangeCSC),
-// }).superRefine(isNotExpired)
 })
 
+// Presently this schema has differing input and output types due to zStringNumber type above
+type zInput  = z.input<typeof _zCreditCard>
+type zOutput = z.output<typeof _zCreditCard>
+type zIO = zInput | zOutput
 
-/* Extracting out a method in TS seems to add friction due to lack of inference of
-inlining the method. There's also a few ways to satisfy the type checker, but unclear
-which is preferred.
-
-To inline arg types or not to inline arg types, that is the question:
-https://github.com/colinhacks/zod/issues/540
-*/
-
-// Would this be acceptable practice in this case?:
-// const isNotExpired: any = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
-
-// Alternatively, we could redeclare the type in TS, or infer the type up until this point
-/*
-type T_isNotExpired = (
-  zobj: z.infer<typeof _ZCreditCard>,
-  ctx: z.RefinementCtx
-) => void
-const isNotExpired: T_isNotExpired = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
-*/
-
-const isNotExpired = (
-  {cc_exp_month: m, cc_exp_year: y}: z.infer<typeof _zCreditCard>,
-  ctx: z.RefinementCtx
-) => {
+const isNotExpired: SuperRefinement<zOutput> = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
   if (y === currentYear && m <= currentMonth) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
