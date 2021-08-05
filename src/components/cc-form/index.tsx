@@ -17,14 +17,8 @@ export const Form = () => {
     <div className={styles.formWrapper}>
       <form className={styles.form} onSubmit={handleSubmit(onValid, onInvalid)}>
         <Inputs.CardNumber />
-
-        <Inputs.ExpiryDate
-          month={<Inputs.ExpMonth />}
-          year ={<Inputs.ExpYear  />}
-        />
-
+        <Inputs.ExpiryDate month={<Inputs.ExpMonth />} year={<Inputs.ExpYear />} />
         <Inputs.SecurityCode />
-
         <Submit className={styles.submit} hasErrors={hasErrors} />
       </form>
 
