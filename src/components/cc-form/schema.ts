@@ -61,9 +61,9 @@ export const _zCreditCard = z.object({
 })
 
 // Presently this schema has differing input and output types due to zStringNumber type above
-type zInput  = z.input<typeof _zCreditCard>
+// type zInput  = z.input<typeof _zCreditCard>
 type zOutput = z.output<typeof _zCreditCard>
-type zIO = zInput | zOutput
+// type zIO = zInput | zOutput
 
 const isNotExpired: SuperRefinement<zOutput> = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
   if (y === currentYear && m <= currentMonth) {
