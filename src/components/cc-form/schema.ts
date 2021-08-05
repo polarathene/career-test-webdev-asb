@@ -20,7 +20,45 @@ const errorDigits     = { message: "Expected only numbers" }
 
 // Custom Types:
 const zDigitString = z.string().regex(r_isDigits, errorDigits)
-const zStringNumber = z.string().transform(s => parseInt(s))
+const zStringNumber = zDigitString.transform(s => parseInt(s))
+
+
+// A `min()` implementation for zDigitString type to use as if it were a `z.number()`
+/*
+The error can be a ZodIssue object that is typed correctly to the issue code:
+- If no message is provided, the issue code fallback is used.
+- Path must be explicitly set, like others to conform to the type.
+*/
+const error: z.ZodIssue = {
+  code: z.ZodIssueCode.too_small,
+  type: "number",
+  minimum: currentYear,
+  inclusive: false,
+  path: ["cc_exp_year"],
+  message: `Value should not be in the past`,
+}
+
+/*
+Or an untyped object, where no fields are type checked:
+- The default error code is "custom", using a different one doesn't work the same as the typed ZodIssue
+- A message is absolutely required regardless of assigned issue code, no fallback is used.
+- A `path` should not be added, unlike the ZodIssue, the relevant path will be appended always, potentially duplicating.
+*/
+/*
+const error = {
+  code: z.ZodIssueCode.too_small,
+  type: "number",
+  minimum: currentYear,
+  inclusive: false,
+  // path: ["cc_exp_year"],
+  message: "Value should not be in the past",
+}
+*/
+
+// Then we refine with our validation condition and error message for failed validation:
+// .refine(y => (y >= currentYear), error),
+
+
 /*
 This schema type handles field level validation, a post validation on
 the object is performed with `superRefine()`; but unless inlining the method
@@ -32,7 +70,7 @@ or adding friction and noise through what is effectively redundant typing?
 export const _zCreditCard = z.object({
   cc_number: zDigitString,
   cc_exp_month: zStringNumber.refine(inRange(1, 12), errorRangeMonth),
-  cc_exp_year: zStringNumber,
+  cc_exp_year: zStringNumber.refine(y => (y >= currentYear), error),
   cc_csc: zDigitString.refine(inRangeStr(3, 4), errorRangeCSC),
 // }).superRefine(isNotExpired)
 })
@@ -62,25 +100,12 @@ const isNotExpired = (
   {cc_exp_month: m, cc_exp_year: y}: z.infer<typeof _zCreditCard>,
   ctx: z.RefinementCtx
 ) => {
-
-  // How is this meant to be typed/handled appropriately?
-  // Repeat the definition inline, make a pointless type or
-  // use any like so?:
-  const error: any = {
-    code: z.ZodIssueCode.custom,
-    message: `Expiry date cannot be in the past`,
-  }
-  // It seems inferrence works well without any if using a literal obj?:
-  if (y < currentYear) {
+  if (y === currentYear && m <= currentMonth) {
     ctx.addIssue({
-      ...error,
-      path: ['cc_exp_year']
+      code: z.ZodIssueCode.custom,
+      path: ['cc_exp_month'],
+      message: `Expiry date cannot be in the past`,
     })
-  }
-  // Requires typing `any`, perhaps due to mutating the obj
-  else if (y === currentYear && m <= currentMonth) {
-    error.path = ['cc_exp_month']
-    ctx.addIssue(error)
   }
 }
 
