@@ -1,6 +1,20 @@
-import schema, { CreditCard } from './schema'
+import { useState, createContext, useContext } from 'react'
 import { ZodError } from 'zod'
-import { useState } from 'react'
+import schema, { CreditCard } from './schema'
+
+export const ErrorContext = createContext<any>(undefined)
+export const useErrorContext = () => useContext(ErrorContext)
+
+function useErrorStatus<T>() {
+  const [errors, setErrors] = useState<ZodError | undefined>();
+  const hasError = (id: keyof T & string) => errors?.issues.some(err => err.path.includes(id))
+  const getError = (id: keyof T & string) => errors?.issues.filter(err => err.path.includes(id))[0]
+
+  return {
+    setErrors,
+    fieldMethods: {hasError, getError}
+  }
+}
 
 // I could not make TS happy for _onValid with generic type `T` due to TS2345
 // Used `T | any` until I have a better grasp of TS.
@@ -12,7 +26,7 @@ type onSubmit<T> = (
 // Again had some TS typing issues with `useState()`. The error object doesn't exist initially,
 // also accepting `undefined` seems to fix it, unclear if that's advised?
 function useForm<T>() {
-  const [errors, setErrors] = useState<ZodError | undefined>();
+  const { setErrors, fieldMethods } = useErrorStatus<T>()
   const [isSubmitted, setSubmitStatus] = useState(false)
   const [isValid, setValid] = useState(false)
 
@@ -39,7 +53,8 @@ function useForm<T>() {
 
   return {
     handleSubmit,
-    formState: {errors, isValid, isSubmitted},
+    formState: { isValid, isSubmitted },
+    errorMethods: fieldMethods,
   }
 }
 
