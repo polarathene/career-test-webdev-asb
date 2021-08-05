@@ -12,51 +12,37 @@ const r_isDigits = /^[0-9]+$/
 
 
 // Custom Errors:
-const errorRangeMonth = { message: "Month must be a number between 1 and 12" }
-const errorRangeCSC   = { message: "Value should be 3 digits; 4 if American Express" }
-const errorNaN        = { message: "Value should be a number"}
-const errorDigits     = { message: "Expected only numbers" }
+const errorRangeMonth = "Must be a number between 1 and 12"
+const errorMinYear    = "Value should not be in the past"
+const errorRangeCSC   = "Value should be 3 digits; 4 if American Express"
+const errorNaN        = "Value should be a number"
+const errorDigits     = "Expected only numbers"
 
 
 // Custom Types:
 const zDigitString = z.string().regex(r_isDigits, errorDigits)
 const zStringNumber = zDigitString.transform(s => parseInt(s))
 
+// Zod maintainer mentioned this type alias to provide a more generic type signature
+// A future release should export it :)
+type SuperRefinement<T> = (
+  val: T,
+  ctx: z.RefinementCtx
+) => void
 
-// A `min()` implementation for zDigitString type to use as if it were a `z.number()`
-/*
-The error can be a ZodIssue object that is typed correctly to the issue code:
-- If no message is provided, the issue code fallback is used.
-- Path must be explicitly set, like others to conform to the type.
-*/
-const error: z.ZodIssue = {
-  code: z.ZodIssueCode.too_small,
-  type: "number",
-  minimum: currentYear,
-  inclusive: false,
-  path: ["cc_exp_year"],
-  message: `Value should not be in the past`,
+// A `min()` implementation for zDigitString to use as if it were a `z.number()`
+type zMin<T> = (min: T, message?: string) => SuperRefinement<T>
+const min: zMin<number> = (min, message) => (val, ctx) => {
+  if (val < min) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.too_small,
+      type: "number",
+      minimum: min,
+      inclusive: false,
+      message,
+    })
+  }
 }
-
-/*
-Or an untyped object, where no fields are type checked:
-- The default error code is "custom", using a different one doesn't work the same as the typed ZodIssue
-- A message is absolutely required regardless of assigned issue code, no fallback is used.
-- A `path` should not be added, unlike the ZodIssue, the relevant path will be appended always, potentially duplicating.
-*/
-/*
-const error = {
-  code: z.ZodIssueCode.too_small,
-  type: "number",
-  minimum: currentYear,
-  inclusive: false,
-  // path: ["cc_exp_year"],
-  message: "Value should not be in the past",
-}
-*/
-
-// Then we refine with our validation condition and error message for failed validation:
-// .refine(y => (y >= currentYear), error),
 
 
 /*
@@ -70,7 +56,7 @@ or adding friction and noise through what is effectively redundant typing?
 export const _zCreditCard = z.object({
   cc_number: zDigitString,
   cc_exp_month: zStringNumber.refine(inRange(1, 12), errorRangeMonth),
-  cc_exp_year: zStringNumber.refine(y => (y >= currentYear), error),
+  cc_exp_year: zStringNumber.superRefine(min(currentYear, errorMinYear)),
   cc_csc: zDigitString.refine(inRangeStr(3, 4), errorRangeCSC),
 // }).superRefine(isNotExpired)
 })
@@ -118,7 +104,7 @@ Month or Year inputs if it'd be worthwhile giving a more contextually specific m
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   if (issue.code === z.ZodIssueCode.invalid_type) {
     if (issue.expected === "number") {
-      return errorNaN
+      return { message: errorNaN }
     }
   }
 
