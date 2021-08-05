@@ -6,7 +6,9 @@ const currentYear  = new Date().getUTCFullYear() - 2000
 
 
 // Custom Validations:
+// `.refine(inRange(x,y), err)` is like `.min(x, err).max(y, err)`, but works after `transform()`
 const inRange    = (x: number, y: number) => (n: number) => (n >= x && n <= y)
+// `inRangeStr` is unnecessary and could instead be `zDigitString.min(x, err).max(y, err)`
 const inRangeStr = (x: number, y: number) => (s: string) => inRange(x, y)(s.length)
 const r_isDigits = /^[0-9]+$/
 
@@ -15,8 +17,8 @@ const r_isDigits = /^[0-9]+$/
 const errorRangeMonth = "Must be a number between 1 and 12"
 const errorMinYear    = "Value should not be in the past"
 const errorRangeCSC   = "Value should be 3 digits; 4 if American Express"
-const errorNaN        = "Value should be a number"
 const errorDigits     = "Expected only numbers"
+const errorNaN        = "Value should be a number"
 
 
 // Custom Types:
@@ -24,13 +26,13 @@ const zDigitString = z.string().regex(r_isDigits, errorDigits)
 const zStringNumber = zDigitString.transform(s => parseInt(s))
 
 // Zod maintainer mentioned this type alias to provide a more generic type signature
-// A future release should export it :)
+// A future release should export it: https://github.com/colinhacks/zod/pull/576 :)
 type SuperRefinement<T> = (
   val: T,
   ctx: z.RefinementCtx
 ) => void
 
-// A `min()` implementation for zDigitString to use as if it were a `z.number()`
+// A `min(n, err)` implementation for zDigitString to use as if it were a `z.number().min(n, err)`
 type zMin<T> = (min: T, message?: string) => SuperRefinement<T>
 const min: zMin<number> = (min, message) => (val, ctx) => {
   if (val < min) {
