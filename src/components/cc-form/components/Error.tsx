@@ -1,5 +1,5 @@
-import { ZodError } from 'zod'
 import type { CreditCard } from '../schema'
+import { useErrorContext } from '../submitLogic'
 
 /*
 - Extra wrapping div is to accomodate browsers like Firefox which do not announce the initial
@@ -22,8 +22,9 @@ export const List: React.FC<ErrorListProps> = ({ className, hasErrors, children 
   </div>
 )
 
-export const Item: React.FC<ErrorItemProps> = ({ errors, id, label }) => {
-  const error = errors?.issues.filter(err => err.path.includes(id))[0]
+export const Item: React.FC<ErrorItemProps> = ({ id, label }) => {
+  const field = useErrorContext()
+  const error = field.getError(id)
 
   return error ? (
     <li aria-atomic="true">
@@ -41,7 +42,6 @@ type ErrorListProps = {
 type ErrorItemProps = {
   id: keyof CreditCard
   label: string
-  errors?: ZodError
 }
 
 export const Error = {List, Item}
