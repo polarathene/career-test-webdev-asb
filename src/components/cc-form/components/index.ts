@@ -1,3 +1,3 @@
 export { Error } from './Error'
-export { Input } from './Input'
+export * as Inputs from './Input'
 export { Submit } from './Submit'

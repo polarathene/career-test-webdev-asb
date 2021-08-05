@@ -2,6 +2,36 @@
 @use './styles/input';
 @use './styles/submit';
 
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  // Unable to make the separator adapt to with flex-wrap
+  // flex-wrap: wrap;
+
+  @media (max-width: 759.9px) {
+    // Placed here instead of error list style since it's strictly layout style.
+    // Targets the inner div since the outer one cannot be hidden for a11y reasons.
+    // > *:not(:first-child) > div {
+    > div.errors > div {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid hsl(240deg 15% 25%);
+    }
+  }
+
+  @media (min-width: 760px) {
+    flex-direction: row;
+
+    > div.errors > div {
+      margin-left: 16px;
+      padding-left: 16px;
+      border-left: 2px solid hsl(240deg 15% 25%);
+    }
+  }
+}
+
 .form {
   display: grid;
   align-items: end;
@@ -26,9 +56,6 @@
     }
     > div.cc_csc {
       grid-column: span 4;
-    }
-    > div.errors {
-      grid-column: span 10;
     }
   }
 

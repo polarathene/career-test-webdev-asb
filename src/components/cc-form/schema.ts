@@ -6,81 +6,72 @@ const currentYear  = new Date().getUTCFullYear() - 2000
 
 
 // Custom Validations:
+// `.refine(inRange(x,y), err)` is like `.min(x, err).max(y, err)`, but works after `transform()`
 const inRange    = (x: number, y: number) => (n: number) => (n >= x && n <= y)
+// `inRangeStr` is unnecessary and could instead be `zDigitString.min(x, err).max(y, err)`
 const inRangeStr = (x: number, y: number) => (s: string) => inRange(x, y)(s.length)
 const r_isDigits = /^[0-9]+$/
 
 
 // Custom Errors:
-const errorRangeMonth = { message: "Month must be a number between 1 and 12" }
-const errorRangeCSC   = { message: "Value should be 3 digits; 4 if American Express" }
-const errorNaN        = { message: "Value should be a number"}
-const errorDigits     = { message: "Expected only numbers" }
+const errorRangeMonth = "Must be a number between 1 and 12"
+const errorMinYear    = "Value should not be in the past"
+const errorRangeCSC   = "Value should be 3 digits; 4 if American Express"
+const errorDigits     = "Expected only numbers"
+const errorNaN        = "Value should be a number"
 
 
 // Custom Types:
 const zDigitString = z.string().regex(r_isDigits, errorDigits)
-const zStringNumber = z.string().transform(s => parseInt(s))
+const zStringNumber = zDigitString.transform(s => parseInt(s))
+
+// Zod maintainer mentioned this type alias to provide a more generic type signature
+// A future release should export it: https://github.com/colinhacks/zod/pull/576 :)
+type SuperRefinement<T> = (
+  val: T,
+  ctx: z.RefinementCtx
+) => void
+
+// A `min(n, err)` implementation for zDigitString to use as if it were a `z.number().min(n, err)`
+type zMin<T> = (min: T, message?: string) => SuperRefinement<T>
+const min: zMin<number> = (min, message) => (val, ctx) => {
+  if (val < min) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.too_small,
+      type: "number",
+      minimum: min,
+      inclusive: false,
+      message,
+    })
+  }
+}
+
+
 /*
 This schema type handles field level validation, a post validation on
-the object is performed with `superRefine()`; but unless inlining the method
-to take advantage of infererence we must derive a temporary type.. The whole
-point of zod is to provide the type instead of repeating the definition.
-Unfortunately, the joys of typing encourage inlining as much for inference
-or adding friction and noise through what is effectively redundant typing?
+the object is performed with `superRefine()` afterwards. It could be considered
+as compound validation as once field level validation passes, we can validate across
+values.
 */
 export const _zCreditCard = z.object({
   cc_number: zDigitString,
   cc_exp_month: zStringNumber.refine(inRange(1, 12), errorRangeMonth),
-  cc_exp_year: zStringNumber,
+  cc_exp_year: zStringNumber.superRefine(min(currentYear, errorMinYear)),
   cc_csc: zDigitString.refine(inRangeStr(3, 4), errorRangeCSC),
-// }).superRefine(isNotExpired)
 })
 
+// Presently this schema has differing input and output types due to zStringNumber type above
+// type zInput  = z.input<typeof _zCreditCard>
+type zOutput = z.output<typeof _zCreditCard>
+// type zIO = zInput | zOutput
 
-/* Extracting out a method in TS seems to add friction due to lack of inference of
-inlining the method. There's also a few ways to satisfy the type checker, but unclear
-which is preferred.
-
-To inline arg types or not to inline arg types, that is the question:
-https://github.com/colinhacks/zod/issues/540
-*/
-
-// Would this be acceptable practice in this case?:
-// const isNotExpired: any = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
-
-// Alternatively, we could redeclare the type in TS, or infer the type up until this point
-/*
-type T_isNotExpired = (
-  zobj: z.infer<typeof _ZCreditCard>,
-  ctx: z.RefinementCtx
-) => void
-const isNotExpired: T_isNotExpired = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
-*/
-
-const isNotExpired = (
-  {cc_exp_month: m, cc_exp_year: y}: z.infer<typeof _zCreditCard>,
-  ctx: z.RefinementCtx
-) => {
-
-  // How is this meant to be typed/handled appropriately?
-  // Repeat the definition inline, make a pointless type or
-  // use any like so?:
-  const error: any = {
-    code: z.ZodIssueCode.custom,
-    message: `Expiry date cannot be in the past`,
-  }
-  // It seems inferrence works well without any if using a literal obj?:
-  if (y < currentYear) {
+const isNotExpired: SuperRefinement<zOutput> = ({cc_exp_month: m, cc_exp_year: y}, ctx) => {
+  if (y === currentYear && m <= currentMonth) {
     ctx.addIssue({
-      ...error,
-      path: ['cc_exp_year']
+      code: z.ZodIssueCode.custom,
+      path: ['cc_exp_month'],
+      message: `Expiry date cannot be in the past`,
     })
-  }
-  // Requires typing `any`, perhaps due to mutating the obj
-  else if (y === currentYear && m <= currentMonth) {
-    error.path = ['cc_exp_month']
-    ctx.addIssue(error)
   }
 }
 
@@ -93,7 +84,7 @@ Month or Year inputs if it'd be worthwhile giving a more contextually specific m
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   if (issue.code === z.ZodIssueCode.invalid_type) {
     if (issue.expected === "number") {
-      return errorNaN
+      return { message: errorNaN }
     }
   }
 
