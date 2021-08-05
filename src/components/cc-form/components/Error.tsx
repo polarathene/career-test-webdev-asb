@@ -23,14 +23,12 @@ export const List: React.FC<ErrorListProps> = ({ className, hasErrors, children 
 )
 
 export const Item: React.FC<ErrorItemProps> = ({ errors, id, label }) => {
-  const error = errors?.issues.filter(err => err.path.includes(id))
+  const error = errors?.issues.filter(err => err.path.includes(id))[0]
 
-  return error && error.length > 0 ? (
+  return error ? (
     <li aria-atomic="true">
       <span id={`err_${id}_label`} aria-describedby={`aria_errorlist`}>{label}</span>
-      {error?.map(err =>
-      <span id={`err_${id}`}>{err.message}</span>
-      )}
+      <span id={`err_${id}`}>{error.message}</span>
     </li>
   ) : null
 }
